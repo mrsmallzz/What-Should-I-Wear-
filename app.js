@@ -1,4 +1,23 @@
 const state = {
+  userName: localStorage.getItem('userName') || '',
+  location: localStorage.getItem('location') || '',
+  age: localStorage.getItem('age') || '',
+  calendarLink: localStorage.getItem('calendarLink') || '',
+  onboardingComplete: localStorage.getItem('onboardingComplete') === 'true',
+  closets: JSON.parse(localStorage.getItem('closets') || '[]'),
+  selectedClosetId: localStorage.getItem('selectedClosetId') || '',
+  tenDayPlans: JSON.parse(localStorage.getItem('tenDayPlans') || '[]'),
+  travelPlans: JSON.parse(localStorage.getItem('travelPlans') || '[]')
+};
+
+const $ = (id) => document.getElementById(id);
+
+function persist() {
+  localStorage.setItem('userName', state.userName);
+  localStorage.setItem('location', state.location);
+  localStorage.setItem('age', state.age);
+  localStorage.setItem('calendarLink', state.calendarLink);
+  localStorage.setItem('onboardingComplete', String(state.onboardingComplete));
   closets: JSON.parse(localStorage.getItem('closets') || '[]'),
   selectedClosetId: localStorage.getItem('selectedClosetId') || null,
   suggestions: [],
@@ -27,6 +46,71 @@ function selectedCloset() {
   return state.closets.find(c => c.id === state.selectedClosetId) || null;
 }
 
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+  $(id).classList.remove('hidden');
+}
+
+function showApp() {
+  document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+  $('app-shell').classList.remove('hidden');
+  renderHome();
+  renderClosets();
+  renderSelectedClosetItems();
+  renderPlans();
+}
+
+function weatherCodeToText(code) {
+  const map = {
+    0: 'Clear', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast', 45: 'Fog',
+    61: 'Rain', 63: 'Rain', 65: 'Heavy rain', 71: 'Snow', 80: 'Rain showers'
+  };
+  return map[code] || 'Variable';
+}
+
+async function fetchWeather(location, date) {
+  if (!location || !date) return { summary: 'Missing location/date', daysOut: 0 };
+  const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`);
+  const geoData = await geo.json();
+  if (!geoData.results || !geoData.results[0]) throw new Error('Location not found.');
+  const { latitude, longitude } = geoData.results[0];
+
+  const target = new Date(date);
+  const today = new Date();
+  const daysOut = Math.ceil((target - today) / 86400000);
+
+  const start = today.toISOString().slice(0, 10);
+  const end = new Date(today.getTime() + 14 * 86400000).toISOString().slice(0, 10);
+  const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&start_date=${start}&end_date=${end}`);
+  const weatherData = await weather.json();
+  const idx = weatherData.daily.time.indexOf(date);
+  if (idx < 0) return { summary: `Forecast unavailable for ${date}`, daysOut };
+
+  const code = weatherData.daily.weather_code[idx];
+  const min = Math.round(weatherData.daily.temperature_2m_min[idx]);
+  const max = Math.round(weatherData.daily.temperature_2m_max[idx]);
+  return { summary: `${weatherCodeToText(code)} (${min}°C - ${max}°C)`, daysOut };
+}
+
+function renderHome() {
+  $('home-name').textContent = state.userName || '-';
+  $('home-location').textContent = state.location || '-';
+  $('home-calendar').textContent = state.calendarLink ? `Linked (${state.calendarLink})` : 'Not linked';
+}
+
+function renderClosets() {
+  const holder = $('closet-list');
+  holder.innerHTML = '';
+  if (!state.closets.length) {
+    holder.innerHTML = '<p class="muted">No closets yet. Create one to get started.</p>';
+    return;
+  }
+
+  state.closets.forEach(closet => {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.innerHTML = `
+      <h4>${closet.name} ${closet.id === state.selectedClosetId ? '<span class="pill">Selected</span>' : ''}</h4>
 function renderHome() {
   ids('home-date').textContent = new Date().toLocaleDateString();
   ids('home-calendar').textContent = state.calendarLink ? `Linked (${state.calendarLink})` : 'Not linked';
