@@ -1,143 +1,138 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>What Should I Wear Today?</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header>
-    <h1>What Should I Wear Today?</h1>
-    <p class="tagline">Plan outfits with weather, vibe, closets, and travel in one place.</p>
-  </header>
-
-  <main>
-    <section class="card" id="onboarding">
-      <h2>Onboarding</h2>
-      <h3 class="prompt">What outfit do you want to wear today?</h3>
-      <form id="questionnaire-form" class="grid-form">
-        <label>Location
-          <input type="text" id="location" placeholder="City, Country" required />
-        </label>
-        <label>Outfit Date
-          <input type="date" id="outfit-date" required />
-        </label>
-        <label>Vibe (Predefined)
-          <select id="vibe-preset">
-            <option value="Casual">Casual</option>
-            <option value="Business">Business</option>
-            <option value="Streetwear">Streetwear</option>
-            <option value="Minimal">Minimal</option>
-            <option value="Athleisure">Athleisure</option>
-            <option value="Romantic">Romantic</option>
-            <option value="Edgy">Edgy</option>
-            <option value="Cozy">Cozy</option>
-          </select>
-        </label>
-        <label>Vibe (Your own words)
-          <input type="text" id="vibe-custom" placeholder="e.g. artsy but clean" />
-        </label>
-        <label>Age (Optional)
-          <input type="number" id="age" min="1" max="120" placeholder="Optional" />
-        </label>
-        <label>Calendar Link (Google Calendar URL, optional)
-          <input type="url" id="calendar-link" placeholder="https://calendar.google.com/..." />
-        </label>
-        <label>Upload owned outfits/photos
-          <input type="file" id="owned-upload" accept="image/*" multiple />
-        </label>
-        <label>Label for owned uploads
-          <input type="text" id="owned-label" placeholder="business, casual, weekend" />
-        </label>
-        <label>Upload target style photos (Pinterest/Instagram/etc.)
-          <input type="file" id="target-upload" accept="image/*" multiple />
-        </label>
-        <label>Label for target style uploads
-          <input type="text" id="target-label" placeholder="target style: modern chic" />
-        </label>
-        <div class="checkline">
-          <input type="checkbox" id="target-not-owned" checked />
-          <label for="target-not-owned">These are not owned outfits (inspiration only)</label>
-        </div>
-
-        <button type="submit">Generate 3 Outfit Suggestions</button>
-      </form>
-      <p id="date-warning" class="warning hidden"></p>
-      <div id="weather-info" class="info"></div>
-      <div id="suggestions" class="suggestions"></div>
-    </section>
-
-    <section class="card" id="home-screen">
-      <h2>Home</h2>
-      <h3>What do you want to wear?</h3>
-      <div class="home-grid">
-        <p><strong>Date:</strong> <span id="home-date"></span></p>
-        <p><strong>Weather:</strong> <span id="home-weather">Unknown</span></p>
-        <p><strong>Calendar:</strong> <span id="home-calendar">Not linked</span></p>
-        <p><strong>Most Recent Outfit:</strong> <span id="home-recent">None yet</span></p>
-      </div>
-    </section>
-
-    <section class="card" id="closets">
-      <h2>Closets</h2>
-      <form id="closet-form" class="inline-form">
-        <input type="text" id="closet-name" placeholder="New closet name" required />
-        <button type="submit">Create Closet</button>
-      </form>
-      <div id="closet-list" class="list"></div>
-
-      <h3>Add Item to Selected Closet</h3>
-      <form id="item-form" class="grid-form compact">
-        <label>Item Name<input type="text" id="item-name" required /></label>
-        <label>Category
-          <select id="item-category">
-            <option>Tops</option><option>Bottoms</option><option>Jackets</option><option>Shoes</option><option>Accessories</option>
-            <option>Dresses</option><option>Knitwear</option><option>Activewear</option><option>Formalwear</option>
-            <option>Bags</option><option>Jewelry</option><option>Hats</option><option>Outerwear</option>
-          </select>
-        </label>
-        <label>Notes<input type="text" id="item-notes" placeholder="color, fabric, fit" /></label>
-        <button type="submit">Save Item</button>
-      </form>
-      <div id="selected-closet-items" class="list"></div>
-    </section>
-
-    <section class="card" id="plans">
-      <h2>10 Day Plans</h2>
-      <form id="ten-day-form" class="inline-form">
-        <input type="text" id="ten-day-name" placeholder="Plan name" required />
-        <button type="submit">Create 10 Day Plan</button>
-      </form>
-      <div id="ten-day-list" class="list"></div>
-
-      <h2>Travel / Event Plans</h2>
-      <form id="travel-form" class="grid-form compact">
-        <label>Travel Plan Name<input type="text" id="travel-name" required /></label>
-        <label>Number of Days<input type="number" id="travel-days" min="1" max="90" value="3" required /></label>
-        <label>Base Location<input type="text" id="travel-location" placeholder="e.g. Tokyo" /></label>
-        <button type="submit">Create Travel Plan</button>
-      </form>
-      <div id="travel-list" class="list"></div>
-    </section>
-  </main>
-
-  <template id="suggestion-template">
-    <article class="suggestion-item">
-      <h4></h4>
-      <p class="details"></p>
-      <div class="actions">
-        <button data-action="view">View</button>
-        <button data-action="save-existing">Save to selected closet</button>
-        <button data-action="save-new">Save to new closet</button>
-        <button data-action="rename">Name outfit</button>
-        <button data-action="like">Like</button>
-        <button data-action="dislike">Dislike</button>
-      </div>
-      <p class="status"></p>
-    </article>
-  </template>
-
-  <script src="app.js"></script>
-</body>
-</html>
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..385fe56801baa3a66a3286928254d8f00ae15798
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,128 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++  <title>What Should I Wear Today?</title>
++  <link rel="stylesheet" href="styles.css" />
++</head>
++<body>
++  <header>
++    <h1>What Should I Wear Today?</h1>
++    <p class="tagline">Your personal outfit planner.</p>
++  </header>
++
++  <main>
++    <section id="screen-onboarding" class="card screen active center">
++      <h2>What outfit do you want to wear today?</h2>
++      <button id="start-btn">Continue</button>
++    </section>
++
++    <section id="screen-name" class="card screen center hidden">
++      <h2>what is you're name</h2>
++      <div class="inline-form">
++        <input type="text" id="user-name" placeholder="Type your name" />
++        <button id="name-continue" aria-label="Continue">→</button>
++      </div>
++    </section>
++
++    <section id="screen-details" class="card screen hidden">
++      <h2 id="details-title">Tell us a little more</h2>
++      <form id="details-form" class="grid-form">
++        <label>Location
++          <input type="text" id="location" placeholder="City, Country" required />
++        </label>
++        <label>Age (Optional)
++          <input type="number" id="age" min="1" max="120" placeholder="Optional" />
++        </label>
++        <label>Google Calendar Link (Optional)
++          <input type="url" id="calendar-link" placeholder="https://calendar.google.com/..." />
++        </label>
++        <button type="submit">Continue</button>
++      </form>
++    </section>
++
++    <section id="screen-photos" class="card screen hidden">
++      <h2>Add your wardrobe photos</h2>
++      <form id="photo-form" class="grid-form">
++        <label>Upload individual clothing items
++          <input type="file" id="item-photos" accept="image/*" multiple />
++        </label>
++        <label>Upload full outfit photos
++          <input type="file" id="outfit-photos" accept="image/*" multiple />
++        </label>
++        <label>Default Closet Name
++          <input type="text" id="default-closet-name" value="My Closet" />
++        </label>
++        <button type="submit">Continue</button>
++      </form>
++      <p class="muted">Uploaded full outfits are analyzed into individual placeholder items and saved in your selected closet.</p>
++    </section>
++
++    <section id="app-shell" class="hidden">
++      <nav class="tabs">
++        <button class="tab active" data-tab="home">Home</button>
++        <button class="tab" data-tab="closets">Closets</button>
++        <button class="tab" data-tab="plans">10 Day Plan</button>
++        <button class="tab" data-tab="travel">Travel</button>
++      </nav>
++
++      <section class="card panel" id="panel-home">
++        <h2>what would you like to wear today?</h2>
++        <p><strong>Name:</strong> <span id="home-name">-</span></p>
++        <p><strong>Location:</strong> <span id="home-location">-</span></p>
++        <p><strong>Weather:</strong> <span id="home-weather">Unknown</span></p>
++        <p><strong>Calendar:</strong> <span id="home-calendar">Not linked</span></p>
++        <p><strong>Upcoming Outfit Date:</strong> <input type="date" id="home-date-picker" /></p>
++        <p id="date-warning" class="warning hidden"></p>
++      </section>
++
++      <section class="card panel hidden" id="panel-closets">
++        <h2>Closets</h2>
++        <form id="closet-form" class="inline-form">
++          <input type="text" id="closet-name" placeholder="New closet name" required />
++          <button type="submit">Create Closet</button>
++        </form>
++        <div id="closet-list" class="list"></div>
++
++        <h3>Add Item to Selected Closet</h3>
++        <form id="item-form" class="grid-form compact">
++          <label>Item Name<input type="text" id="item-name" required /></label>
++          <label>Category
++            <select id="item-category">
++              <option>Tops</option><option>Bottoms</option><option>Jackets</option><option>Shoes</option><option>Accessories</option>
++              <option>Dresses</option><option>Knitwear</option><option>Activewear</option><option>Formalwear</option>
++              <option>Bags</option><option>Jewelry</option><option>Hats</option><option>Outerwear</option><option>Outfit</option>
++            </select>
++          </label>
++          <label>Notes<input type="text" id="item-notes" placeholder="color, fabric, fit" /></label>
++          <button type="submit">Save Item</button>
++        </form>
++        <div id="selected-closet-items" class="list"></div>
++      </section>
++
++      <section class="card panel hidden" id="panel-plans">
++        <h2>10 Day Plans</h2>
++        <form id="ten-day-form" class="inline-form">
++          <input type="text" id="ten-day-name" placeholder="Plan name" required />
++          <button type="submit">Create 10 Day Plan</button>
++        </form>
++        <div id="ten-day-list" class="list"></div>
++      </section>
++
++      <section class="card panel hidden" id="panel-travel">
++        <h2>Travel / Event Plans</h2>
++        <form id="travel-form" class="grid-form compact">
++          <label>Travel Plan Name<input type="text" id="travel-name" required /></label>
++          <label>Number of Days<input type="number" id="travel-days" min="1" max="90" value="3" required /></label>
++          <label>Base Location<input type="text" id="travel-location" placeholder="e.g. Tokyo" /></label>
++          <button type="submit">Create Travel Plan</button>
++        </form>
++        <div id="travel-list" class="list"></div>
++      </section>
++    </section>
++  </main>
++
++  <script src="app.js"></script>
++</body>
++</html>
+ 
+EOF
+)
